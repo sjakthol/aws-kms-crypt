@@ -62,8 +62,13 @@ my super secret plan
 <a name="node"></a>
 
 ## NodeJS
-The `nodejs` directory contains a NodeJS module that implements the KMS based encryption
+The `nodejs` directory contains a NodeJS package that implements the KMS based encryption
 and decryption functionality.
+
+The package can be installed from NPM:
+```
+npm install aws-kms-crypt
+```
 
 ### Requirements
 A recent version of Node (>= 4) is required.
@@ -158,7 +163,7 @@ produced and takes the following steps to decrypt the data:
    to retrieve the plaintext data encryption key
 2. The plaintext data key and the IV is used to decrypt the encrypted data locally.
 
-# TODO
+# Future Work
 * Python support
 * Support other algorithms than AES-128-CBC
 * Automated testing of interoperability
