@@ -1,0 +1,41 @@
+{
+  "name": "aws-kms-crypt",
+  "version": "0.0.1",
+  "description": "Utility for encrypting and decrypting secrets with the AWS KMS service.",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc --all mocha",
+    "lint": "standard"
+  },
+  "keywords": [
+    "aws",
+    "kms",
+    "secrets",
+    "encrypt",
+    "decrypt",
+    "tool"
+  ],
+  "author": "Sami Jaktholm <sjakthol@outlook.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^4.1.1",
+    "mocha": "^3.5.0",
+    "nyc": "^11.1.0",
+    "pre-commit": "^1.2.2",
+    "sinon": "^3.2.1",
+    "sinon-chai": "^2.13.0",
+    "standard": "^10.0.3"
+  },
+  "pre-commit": [
+    "lint"
+  ],
+  "standard": {
+    "globals": [
+      "it",
+      "describe"
+    ]
+  },
+  "dependencies": {
+    "aws-sdk": "^2.100.0"
+  }
+}
