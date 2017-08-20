@@ -1,6 +1,6 @@
 {
   "name": "aws-kms-crypt",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Utility for encrypting and decrypting secrets with the AWS KMS service.",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,10 @@
   ],
   "author": "Sami Jaktholm <sjakthol@outlook.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sjakthol/aws-kms-crypt"
+  },
   "devDependencies": {
     "chai": "^4.1.1",
     "mocha": "^3.5.0",
