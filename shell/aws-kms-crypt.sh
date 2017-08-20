@@ -10,7 +10,7 @@ AES_IV_LENGTH_HEX=32
 required_commands=("aws" "openssl" "base64" "jq" "cut" "sed" "od")
 operation=""
 kms_key_id=""
-encryption_context=""
+encryption_context="{}"
 
 main() {
     check_required_commands
@@ -40,18 +40,12 @@ do_encrypt() {
     local iv_hex="$(base64tohex "$iv_b64")"
     log_debug "Generated IV: hex=$iv_hex, b64=$iv_b64"
 
-    # Generate the encrypted datakey
-    local enc_ctx_args=""
-    if [ -n "$encryption_context" ]; then
-        enc_ctx_args="--encryption-context $encryption_context"
-    fi
-
     local key_enc key_b64;
     log_debug "Generating encrypted data key"
     read key_b64 key_enc < \
         <(aws kms generate-data-key \
             --key-id "$kms_key_id" \
-            $enc_ctx_args \
+            --encryption-context "$encryption_context" \
             --key-spec AES_128 \
             --output text --query '[Plaintext,CiphertextBlob]')
     local key_hex="$(base64tohex "$key_b64")"
@@ -85,7 +79,7 @@ do_encrypt() {
         --arg Iv "$iv_hex" \
             '{ EncryptedData: $EncryptedData,
                EncryptedDataKey: $EncryptedDataKey,
-               EncryptionContext: $EncryptionContext,
+               EncryptionContext: $EncryptionContext | fromjson,
                Iv: $Iv }'
 
 }
@@ -95,7 +89,7 @@ do_decrypt() {
     local parsed_variables="$(jq -r '@sh "
         local encrypted_data=\(.EncryptedData)
         local key_enc=\(.EncryptedDataKey)
-        local encryption_context=\(.EncryptionContext)
+        local encryption_context=\(.EncryptionContext | tojson)
         local iv_hex=\(.Iv)
     "')"
 
@@ -112,15 +106,10 @@ do_decrypt() {
     log_debug "iv = $iv_hex"
 
     # Decrypt the data key
-    local enc_ctx_args=""
-    if [ -n "$encryption_context" ]; then
-        enc_ctx_args="--encryption-context $encryption_context"
-    fi
-
     local key_b64
     log_debug "Decrypting encrypted datakey"
     read key_b64 < \
-        <(echo "$key_enc" | base64 -d | aws kms decrypt $enc_ctx_args --ciphertext-blob fileb:///dev/stdin --output text --query Plaintext)
+        <(echo "$key_enc" | base64 -d | aws kms decrypt --encryption-context "$encryption_context" --ciphertext-blob fileb:///dev/stdin --output text --query Plaintext)
     local key_hex="$(base64tohex "$key_b64")"
     log_debug "Decrypted Data Key: hex=$key_hex, b64=$key_b64, enc=$key_enc"
 
@@ -174,6 +163,15 @@ parse_args() {
     if [ "$operation" == "encrypt" ]; then
         if [ -z "$kms_key_id" ]; then
             exit_arg_failure "encrypt requires -k or --kms-key-id argument"
+        fi
+    fi
+
+    if [ -n "$encryption_context" ]; then
+        local parsed_ctx
+        read parsed_ctx < <(echo "$encryption_context" | jq .)
+
+        if [ -z "$parsed_ctx" ]; then
+            exit_arg_failure "failed to parse the provided encryption context (must be valid JSON)"
         fi
     fi
 }

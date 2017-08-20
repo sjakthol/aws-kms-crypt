@@ -56,7 +56,10 @@ The following steps are taken when the data is encrypted:
     {
       "EncryptedData": "<base64>",
       "EncryptedDataKey": "<base64>",
-      "EncryptionContext": "KeyName1=1,KeyName2=2",
+      "EncryptionContext": {
+        "KeyName1": "1",
+        "KeyName2": "2"
+      },
       "Iv": "<hex>"
     }
     ````
