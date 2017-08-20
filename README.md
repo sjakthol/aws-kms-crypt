@@ -1,5 +1,15 @@
 Utility for encrypting and decrypting secrets with the AWS KMS service.
 
+* [Features](#features)
+* [Usage](#usage)
+  * [Shell](#shell)
+  * [NodeJS](#node)
+* [How it Works?](#details)
+
+<a name="features"></a>
+
+# Features
+
 The key features are:
 * KMS is only used to generate data encryption keys and the plaintext data
   is never sent to Amazon.
@@ -7,7 +17,11 @@ The key features are:
   multiple programming languages. That is, you can, for example, encrypt a
   secret with a command line tool and decrypt it from your NodeJS application.
 
+<a name="usage"></a>
+
 # Usage
+
+<a name="shell"></a>
 
 ## Shell Scripts (Bash)
 The shell script at `shell/aws-kms-crypt.sh` provides an interface for shell
@@ -44,6 +58,8 @@ echo "my super secret plan" | ./aws-kms-crypt.sh encrypt --kms-key-id alias/comm
 $ cat encrypted-plan.json | ./aws-kms-crypt.sh decrypt
 my super secret plan
 ```
+
+<a name="node"></a>
 
 ## NodeJS
 The `nodejs` directory contains a NodeJS module that implements the KMS based encryption
@@ -103,6 +119,8 @@ kmscrypt.decrypt({
   // => my super secret plan
 })
 ```
+
+<a name="details"></a>
 
 # How it works?
 
