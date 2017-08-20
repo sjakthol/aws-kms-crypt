@@ -157,3 +157,8 @@ produced and takes the following steps to decrypt the data:
 1. The encrypted data key is decrypted using the [Decrypt](https://docs.aws.amazon.com/kms/latest/APIReference/API_Decrypt.html) KMS API call
    to retrieve the plaintext data encryption key
 2. The plaintext data key and the IV is used to decrypt the encrypted data locally.
+
+# TODO
+* Python support
+* Support other algorithms than AES-128-CBC
+* Automated testing of interoperability
