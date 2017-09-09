@@ -1,6 +1,6 @@
 {
   "name": "aws-kms-crypt",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Utility for encrypting and decrypting secrets with the AWS KMS service.",
   "main": "index.js",
   "scripts": {
