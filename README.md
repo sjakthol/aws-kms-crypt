@@ -3,7 +3,8 @@ Utility for encrypting and decrypting secrets with the AWS KMS service.
 * [Features](#features)
 * [Usage](#usage)
   * [Shell](#shell)
-  * [NodeJS](#node)
+  * [Node](#node)
+  * [Python](#python)
 * [How it Works?](#details)
 
 <a name="features"></a>
@@ -11,11 +12,9 @@ Utility for encrypting and decrypting secrets with the AWS KMS service.
 # Features
 
 The key features are:
-* KMS is only used to generate data encryption keys and the plaintext data
-  is never sent to Amazon.
-* The utility provides interoperable encryption / decryption interfaces for
-  multiple programming languages. That is, you can, for example, encrypt a
-  secret with a command line tool and decrypt it from your NodeJS application.
+* Simple APIs for encrypting and decrypting sensitive data
+* Interoperable implementations for multiple languages (Shell, Node and Python)
+* [Envelope Encryption](https://docs.aws.amazon.com/kms/latest/developerguide/workflow.html) with `AES-128-CBC` and KMS generated data keys
 
 <a name="usage"></a>
 
@@ -47,22 +46,22 @@ specified KMS key and encryption context.
 ### Encrypting Data
 ```bash
 # No encryption context
-echo "my super secret plan" | ./aws-kms-crypt.sh encrypt --kms-key-id alias/common > encrypted-plan.json
+echo "secretp4ssw0rd!" | ./aws-kms-crypt.sh encrypt --kms-key-id alias/common > encrypted-plan.json
 
 # With encryption context
-echo "my super secret plan" | ./aws-kms-crypt.sh encrypt --kms-key-id alias/common --encryption-context type=plan,entity=admins > encrypted-plan.json
+echo "secretp4ssw0rd!" | ./aws-kms-crypt.sh encrypt --kms-key-id alias/common --encryption-context type=plan,entity=admins > encrypted-plan.json
 ```
 
 ### Decrypting Data
 ```bash
 $ cat encrypted-plan.json | ./aws-kms-crypt.sh decrypt
-my super secret plan
+secretp4ssw0rd!
 ```
 
 <a name="node"></a>
 
-## NodeJS
-The `nodejs` directory contains a NodeJS package that implements the KMS based encryption
+## Node
+The `nodejs` directory contains a Node package that implements the KMS based encryption
 and decryption functionality.
 
 The package can be installed from NPM:
@@ -81,7 +80,7 @@ specified KMS key and encryption context.
 Use the `encrypt()` function of the module to encrypt any stringified data:
 ```js
 const kmscrypt = require('aws-kms-crypt')
-kmscrypt.encrypt('my super secret plan', {
+kmscrypt.encrypt('secretp4ssw0rd!', {
   key: 'alias/common', // Change your key here
   region: 'eu-west-1', // AWS SDK needs to know this
   encryptionContext: { purpose: 'automation' } // optional, can be left out
@@ -121,8 +120,47 @@ kmscrypt.decrypt({
   }
 
   console.log(result)
-  // => my super secret plan
+  // => secretp4ssw0rd!
 })
+```
+## Python
+<a name="python"></a>
+The `python` directory contains a Python package that implements the KMS based encryption
+and decryption functionality.
+
+This package can be installed from PyPi:
+```
+pip install aws-kms-crypt
+```
+
+### Requirements
+The module has been tested to work with both Python 2.7 and Python 3.5.
+
+You also need to configure the AWS SDK to have access to credentials that can
+`kms:GenerateDataKey`, `kms:GenerateRandom` and `kms:Decrypt` with the
+specified KMS key and encryption context.
+
+### Encrypting Data
+```python
+import kmscrypt
+
+res = kmscrypt.encrypt('secretp4ssw0rd!', key_id='alias/common', encryption_context={
+  'purpose': 'automation'
+})
+
+# res is now a dict of form
+# {
+#   'EncryptedData': 'Su00srm/ru5kd9DLDvi0EdEjjBGUrRBJ06vUmL8QHUU=',
+#   'EncryptedDataKey': 'AQIDAHhyrbU/fP<snip>',
+#   'EncryptionContext': {'purpose': 'automation'},
+#   'Iv': 'd07acff1e2301c468cd3164b8858e477'
+# }
+```
+
+### Decrypting Data
+```python
+secret = kmscrypt.decrypt(res)
+print(secret) # => secretp4ssw0rd!
 ```
 
 <a name="details"></a>
@@ -134,7 +172,7 @@ kmscrypt.decrypt({
 The following steps are taken when the data is encrypted:
 
 1. A random 16 byte initialization vector is generated with the [GenerateRandom](https://docs.aws.amazon.com/kms/latest/APIReference/API_GenerateRandom.html) KMS API
-   call (shell) or through a platform-specific randomness API (NodeJS)
+   call (shell) or through a platform-specific randomness API (Node, Python)
 2. A data encryption key for AES-128 algorithm is generated with the [GenerateDataKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_GenerateDataKey.html)` KMS API call
 3. The input data is encrypted locally with AES-128-CBC algorithm using the plaintext version
    of the generated data key together with the generated IV for encryption.
@@ -164,6 +202,5 @@ produced and takes the following steps to decrypt the data:
 2. The plaintext data key and the IV is used to decrypt the encrypted data locally.
 
 # Future Work
-* Python support
 * Support other algorithms than AES-128-CBC
 * Automated testing of interoperability
