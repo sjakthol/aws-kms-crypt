@@ -19,3 +19,6 @@ __pycache__/
 
 # coverage.py
 .coverage
+
+target/
+Cargo.lock

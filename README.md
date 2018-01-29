@@ -5,6 +5,7 @@ Utility for encrypting and decrypting secrets with the AWS KMS service.
   * [Shell](#shell)
   * [Node](#node)
   * [Python](#python)
+  * [Rust](#rust)
 * [How it Works?](#details)
 
 <a name="features"></a>
@@ -161,6 +162,46 @@ res = kmscrypt.encrypt('secretp4ssw0rd!', key_id='alias/common', encryption_cont
 ```python
 secret = kmscrypt.decrypt(res)
 print(secret) # => secretp4ssw0rd!
+```
+
+<a name="shell"></a>
+
+## Rust
+The `rust` directory contains a rust crate that implements KMS based decryption
+functionality.
+
+The crate is currently only available from GitHub and can be installed with
+cargo as follows
+
+### Encrypting Data
+Encryption in Rust is not supported at the moment.
+
+### Decrypting Data
+Here's a full example that uses [serde_json](https://crates.io/crates/serde_json)
+to deserialize the JSON encoded secret into a struct:
+
+```rust
+extern crate aws_kms_crypt;
+extern crate serde_json;
+
+fn main() {
+    let raw = r#"{
+        "EncryptedData": "vRhu+D5LrwNctyhxDvUoqL51YH2LclgUKtDz/2Nxy6Y=",
+        "EncryptedDataKey": "<snip>KBFRpvDvpXNXu3e/tTO6Jfi",
+        "EncryptionContext": {
+            "entity": "admin"
+        },
+        "Iv": "31bf06a8e0d15a26f1325da6f4f33a9c"
+    }"#;
+
+    let data: aws_kms_crypt::EncryptedSecret = serde_json::from_str(raw).unwrap();
+    let options = aws_kms_crypt::Options {
+        region: "eu-west-1".to_owned()
+    };
+
+    let res = aws_kms_crypt::decrypt(&data, &options);
+    println!("Secret is: {:?}", res.unwrap());
+}
 ```
 
 <a name="details"></a>
