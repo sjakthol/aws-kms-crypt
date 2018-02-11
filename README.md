@@ -151,8 +151,10 @@ kmscrypt.decrypt({
   // => secretp4ssw0rd!
 })
 ```
-## Python
+
 <a name="usage-python"></a>
+
+## Python
 The `python` directory contains a Python package that implements the KMS based encryption
 and decryption functionality. The module has been tested to work with both Python 2.7 and
 Python 3.5.
