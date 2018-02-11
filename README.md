@@ -1,36 +1,77 @@
-Utility for encrypting and decrypting secrets with the AWS KMS service.
+# aws-kms-crypt
+
+Library for encrypting and decrypting secrets within the AWS ecosystem.
 
 * [Features](#features)
+* [Installations](#installation)
 * [Usage](#usage)
-  * [Shell](#shell)
-  * [Node](#node)
-  * [Python](#python)
-  * [Rust](#rust)
+  * [General Prerequisites](#usage-general)
+  * [Shell](#usage-shell)
+  * [Node](#usage-node)
+  * [Python](#usage-python)
+  * [Rust](#usage-rust)
 * [How it Works?](#details)
 
 <a name="features"></a>
 
 # Features
 
-The key features are:
-* Simple APIs for encrypting and decrypting sensitive data
-* Interoperable implementations for multiple languages (Shell, Node and Python)
-* [Envelope Encryption](https://docs.aws.amazon.com/kms/latest/developerguide/workflow.html) with `AES-128-CBC` and KMS generated data keys
+* **Interoperable** - Interoperable implementations for Bash, NodeJS, Python and Rust.
+* **Secure** - AES encryption with KMS generated data keys ([details](#details)).
+* **Simple** - Simple API for encrypting and decrypting sensitive data from all supported languages.
+
+<a name="installation"></a>
+
+# Installation
+
+## Shell
+
+```
+curl -LO https://raw.githubusercontent.com/sjakthol/aws-kms-crypt/master/shell/aws-kms-crypt.sh && chmod +x aws-kms-crypt.sh
+```
+
+## NodeJS
+```
+npm install aws-kms-crypt
+```
+
+## Python
+```
+pip install aws-kms-crypt
+```
+
+## Rust
+Experimental. Not available at the moment.
 
 <a name="usage"></a>
 
 # Usage
 
-<a name="shell"></a>
+<a name="usage-general"></a>
+
+## General Prerequisites
+
+All implementations require access to AWS credentials.
+
+When encrypting data, the credentials must allow the following actions:
+
+* `kms:GenerateDataKey`
+* `kms:GenerateRandom`
+
+When decrypting data, the credentials must allow the following actions:
+
+* `kms:Decrypt`
+
+In both cases, the access can (and should in the case of `kms:Decrypt`) be
+further limited with IAM policy conditions (see [here](https://docs.aws.amazon.com/kms/latest/developerguide/policy-conditions.html)
+for details).
+
+<a name="usage-shell"></a>
 
 ## Shell Scripts (Bash)
 The shell script at `shell/aws-kms-crypt.sh` provides an interface for shell
-scripts to encrypt and decrypt data.
-
-### Requirements
-The script uses the AWS CLI for interacting with the KMS service and the `openssl`
-command line tool to encrypt the data. The script needs the following commands / tools
-to function:
+scripts to encrypt and decrypt data. The script needs the following commands /
+tools to function:
 
 * `aws`
 * `base64`
@@ -40,17 +81,13 @@ to function:
 * `openssl`
 * `sed`
 
-You also need to configure AWS CLI to have access to credentials that can
-`kms:GenerateDataKey`, `kms:GenerateRandom` and `kms:Decrypt` with the
-specified KMS key and encryption context.
-
 ### Encrypting Data
 ```bash
 # No encryption context
-echo "secretp4ssw0rd!" | ./aws-kms-crypt.sh encrypt --kms-key-id alias/common > encrypted-plan.json
+echo -n "secretp4ssw0rd!" | ./aws-kms-crypt.sh encrypt --kms-key-id alias/common > encrypted-plan.json
 
 # With encryption context
-echo "secretp4ssw0rd!" | ./aws-kms-crypt.sh encrypt --kms-key-id alias/common --encryption-context type=plan,entity=admins > encrypted-plan.json
+echo -n "secretp4ssw0rd!" | ./aws-kms-crypt.sh encrypt --kms-key-id alias/common --encryption-context type=plan,entity=admins > encrypted-plan.json
 ```
 
 ### Decrypting Data
@@ -59,23 +96,13 @@ $ cat encrypted-plan.json | ./aws-kms-crypt.sh decrypt
 secretp4ssw0rd!
 ```
 
-<a name="node"></a>
+<a name="usage-node"></a>
 
 ## Node
 The `nodejs` directory contains a Node package that implements the KMS based encryption
 and decryption functionality.
 
-The package can be installed from NPM:
-```
-npm install aws-kms-crypt
-```
-
-### Requirements
 A recent version of Node (>= 4) is required.
-
-You also need to configure the AWS SDK to have access to credentials that can
-`kms:GenerateDataKey`, `kms:GenerateRandom` and `kms:Decrypt` with the
-specified KMS key and encryption context.
 
 ### Encrypting Data
 Use the `encrypt()` function of the module to encrypt any stringified data:
@@ -125,21 +152,10 @@ kmscrypt.decrypt({
 })
 ```
 ## Python
-<a name="python"></a>
+<a name="usage-python"></a>
 The `python` directory contains a Python package that implements the KMS based encryption
-and decryption functionality.
-
-This package can be installed from PyPi:
-```
-pip install aws-kms-crypt
-```
-
-### Requirements
-The module has been tested to work with both Python 2.7 and Python 3.5.
-
-You also need to configure the AWS SDK to have access to credentials that can
-`kms:GenerateDataKey`, `kms:GenerateRandom` and `kms:Decrypt` with the
-specified KMS key and encryption context.
+and decryption functionality. The module has been tested to work with both Python 2.7 and
+Python 3.5.
 
 ### Encrypting Data
 ```python
@@ -164,14 +180,11 @@ secret = kmscrypt.decrypt(res)
 print(secret) # => secretp4ssw0rd!
 ```
 
-<a name="shell"></a>
+<a name="usage-rust"></a>
 
 ## Rust
 The `rust` directory contains a rust crate that implements KMS based decryption
 functionality.
-
-The crate is currently only available from GitHub and can be installed with
-cargo as follows
 
 ### Encrypting Data
 Encryption in Rust is not supported at the moment.
