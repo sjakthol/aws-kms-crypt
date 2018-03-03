@@ -1,5 +1,9 @@
 [package]
 name = "aws_kms_crypt"
+description = "Library for encrypting and decrypting secrets within the AWS ecosystem."
+license = "MIT"
+repository = "https://github.com/sjakthol/aws-kms-crypt"
+readme = "../README.md"
 version = "0.1.0"
 authors = ["Sami Jaktholm <sjakthol@outlook.com>"]
 
@@ -9,6 +13,7 @@ base64-serde = "0.2.0"
 error-chain = "0.11.0"
 hex-serde = "0.1.0"
 openssl = "0.9.23"
+rand = "0.4"
 rusoto_core = "0.31.0"
 rusoto_kms = "0.31.0"
 serde = "1.0"

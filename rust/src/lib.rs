@@ -20,6 +20,7 @@ extern crate base64_serde;
 extern crate error_chain;
 extern crate hex_serde;
 extern crate openssl;
+extern crate rand;
 extern crate rusoto_core;
 extern crate rusoto_kms;
 extern crate serde;
@@ -27,6 +28,7 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json;
 
+use rand::Rng;
 use rusoto_kms::{Kms, KmsClient};
 use std::option::Option;
 use std::str::FromStr;
@@ -55,6 +57,12 @@ pub mod errors {
             DecryptFailed(detail: String) {
                 description("decrypt failed")
                 display("decrypt failed: {}", detail)
+            }
+
+            /// An error emitted if encryption fails
+            EncryptFailed(detail: String) {
+                description("encrypt failed")
+                display("encrypt failed: {}", detail)
             }
 
             /// An error emitted if the region configured in options is
@@ -113,11 +121,24 @@ pub struct EncryptedSecret {
     pub Iv: Vec<u8>
 }
 
-/// Options for encryption / decryption
+/// Options for decryption
 #[derive(Clone, Debug, Default)]
-pub struct Options {
+pub struct DecryptOptions {
     /// The AWS region to use when calling KMS
     pub region: String
+}
+
+/// Options for encryption
+#[derive(Clone, Debug, Default)]
+pub struct EncryptOptions {
+    /// The AWS region to use when calling KMS
+    pub region: String,
+
+    /// KMS key ID, ARN, alias or alias ARN
+    pub key: String,
+
+    /// AWS KMS encryption context
+    pub encryption_context: std::collections::HashMap<String, String>
 }
 
 /// Decrypt a previously encrypted secret.
@@ -136,14 +157,13 @@ pub struct Options {
 /// }"#;
 ///
 /// let data: aws_kms_crypt::EncryptedSecret = serde_json::from_str(raw).unwrap();
-/// let options = aws_kms_crypt::Options {
+/// let options = aws_kms_crypt::DecryptOptions {
 ///     region: "eu-west-1".to_owned()
 /// };
 ///
 /// let res = aws_kms_crypt::decrypt(&data, &options);
-/// # assert_eq!(res.is_err(), true);
 /// ```
-pub fn decrypt(data: &EncryptedSecret, options: &Options) -> errors::Result<String> {
+pub fn decrypt(data: &EncryptedSecret, options: &DecryptOptions) -> errors::Result<String> {
     let key = decrypt_data_key(data, options)?;
     let iv = Option::Some(&data.Iv[..]);
     let encrypted = &data.EncryptedData;
@@ -158,7 +178,74 @@ pub fn decrypt(data: &EncryptedSecret, options: &Options) -> errors::Result<Stri
     Ok(decoded)
 }
 
-fn decrypt_data_key(data: &EncryptedSecret, options: &Options) -> errors::Result<Vec<u8>> {
+/// Encrypt a secret with KMS.
+///
+/// # Examples
+/// ```
+/// extern crate aws_kms_crypt;
+/// extern crate serde_json;
+///
+/// use std::collections::HashMap;
+///
+/// let mut encryption_context = HashMap::new();
+/// encryption_context.insert("entity".to_owned(), "admin".to_owned());
+///
+/// let options = aws_kms_crypt::EncryptOptions {
+///     encryption_context: encryption_context,
+///     key: "alias/common".into(),
+///     region: "eu-west-1".into()
+/// };
+///
+/// let data = "secret".into();
+/// let res = aws_kms_crypt::encrypt(&data, &options);
+/// ```
+pub fn encrypt(data: &String, options: &EncryptOptions) -> errors::Result<EncryptedSecret> {
+    let datakey = generate_data_key(options)?;
+    let key = datakey.plaintext
+        .chain_err(|| ErrorKind::AwsError("KMS.GenerateDataKey() didn't return plaintext".into()))?;
+    let key_enc = datakey.ciphertext_blob
+        .chain_err(|| ErrorKind::AwsError("KMS.GenerateDataKey() didn't return plaintext".into()))?;
+    let iv = rand::thread_rng()
+        .gen_iter::<u8>()
+        .take(16)
+        .collect::<Vec<u8>>();
+
+    let cipher = openssl::symm::Cipher::aes_128_cbc();
+    let res = openssl::symm::encrypt(cipher, &key, Option::Some(&iv), data.as_bytes())
+        .chain_err(|| ErrorKind::DecryptFailed("openssl error".into()))?;
+
+    Ok(EncryptedSecret {
+        EncryptedData: res.clone(),
+        EncryptedDataKey: key_enc,
+        EncryptionContext: options.encryption_context.clone(),
+        Iv: iv
+    })
+}
+
+fn generate_data_key(options: &EncryptOptions) -> errors::Result<rusoto_kms::GenerateDataKeyResponse> {
+    let client = rusoto_core::default_tls_client()
+        .chain_err(|| ErrorKind::AwsSdkError("failed to build http client".into()))?;
+    let credentials = rusoto_core::DefaultCredentialsProvider::new()
+        .chain_err(|| ErrorKind::AwsSdkError("failed to build credential provider".into()))?;
+    let region = rusoto_core::Region::from_str(&options.region)
+        .chain_err(|| ErrorKind::InvalidRegion(options.region.clone()))?;
+
+    let kms = KmsClient::new(client, credentials, region);
+    let req = rusoto_kms::GenerateDataKeyRequest {
+        encryption_context: Option::Some(options.encryption_context.clone()),
+        key_id: options.key.clone(),
+        key_spec: Option::Some("AES_128".into()),
+        grant_tokens: Option::None,
+        number_of_bytes: Option::None
+    };
+
+    let res = kms.generate_data_key(&req)
+        .chain_err(|| ErrorKind::AwsError("KMS.GenerateDataKey() failed".into()))?;
+
+    Ok(res)
+}
+
+fn decrypt_data_key(data: &EncryptedSecret, options: &DecryptOptions) -> errors::Result<Vec<u8>> {
     let client = rusoto_core::default_tls_client()
         .chain_err(|| ErrorKind::AwsSdkError("failed to build http client".into()))?;
     let credentials = rusoto_core::DefaultCredentialsProvider::new()
@@ -197,7 +284,7 @@ mod test {
         }"#;
 
         let data: EncryptedSecret = serde_json::from_str(raw).unwrap();
-        let options = Options {
+        let options = DecryptOptions {
             region: "eu-wst-1".to_owned()
         };
 

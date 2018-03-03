@@ -14,7 +14,7 @@ fn main() {
     }"#;
 
     let data: aws_kms_crypt::EncryptedSecret = serde_json::from_str(raw).unwrap();
-    let options = aws_kms_crypt::Options {
+    let options = aws_kms_crypt::DecryptOptions {
         region: "eu-west-1".to_owned()
     };
 

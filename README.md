@@ -3,7 +3,7 @@
 Library for encrypting and decrypting secrets within the AWS ecosystem.
 
 * [Features](#features)
-* [Installations](#installation)
+* [Installation](#installation)
 * [Usage](#usage)
   * [General Prerequisites](#usage-general)
   * [Shell](#usage-shell)
@@ -41,7 +41,11 @@ pip install aws-kms-crypt
 ```
 
 ## Rust
-Experimental. Not available at the moment.
+In `cargo.toml`
+```
+[dependencies]
+aws_kms_crypt = "0.1.0"
+```
 
 <a name="usage"></a>
 
@@ -185,11 +189,31 @@ print(secret) # => secretp4ssw0rd!
 <a name="usage-rust"></a>
 
 ## Rust
-The `rust` directory contains a rust crate that implements KMS based decryption
-functionality.
+The `rust` directory contains a rust crate that implements KMS based encryption
+and decryption functionality.
 
 ### Encrypting Data
-Encryption in Rust is not supported at the moment.
+```rust
+extern crate aws_kms_crypt;
+extern crate serde_json;
+
+use std::collections::HashMap;
+
+fn main() {
+    let mut encryption_context = HashMap::new();
+    encryption_context.insert("entity".to_owned(), "admin".to_owned());
+
+    let options = aws_kms_crypt::EncryptOptions {
+        encryption_context: encryption_context,
+        key: "alias/common".into(),
+        region: "eu-west-1".into()
+    };
+
+    let data = "secret".into();
+    let res = aws_kms_crypt::encrypt(&data, &options);
+    println!("{}", serde_json::to_string(&res.unwrap()).unwrap());
+}
+```
 
 ### Decrypting Data
 Here's a full example that uses [serde_json](https://crates.io/crates/serde_json)
@@ -210,7 +234,7 @@ fn main() {
     }"#;
 
     let data: aws_kms_crypt::EncryptedSecret = serde_json::from_str(raw).unwrap();
-    let options = aws_kms_crypt::Options {
+    let options = aws_kms_crypt::DecryptOptions {
         region: "eu-west-1".to_owned()
     };
 
