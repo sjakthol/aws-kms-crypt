@@ -17,12 +17,12 @@ const decryptStub = AWS.KMS.prototype.decrypt = sinon.stub()
 const TEST_PLAINTEXT_KEY = Buffer.from('00968820dfc11ee7816ac942b3980941', 'hex')
 const TEST_ENCRYPTED_KEY = Buffer.from('e05c35df8681f98b1fcee59bcc8e0d2e', 'hex')
 const TEST_DATA = {
-  'EncryptedData': 'mRio/6iZ0C0xCRQrvhAvLIgnPda6Cc/0s8YPyRCkanc=',
-  'EncryptedDataKey': 'AQIDAHhyrbU/fPcQ+a8pJiYC78j8wop4mw1jqy3CZk35',
-  'EncryptionContext': {
-    'entity': 'test'
+  EncryptedData: 'mRio/6iZ0C0xCRQrvhAvLIgnPda6Cc/0s8YPyRCkanc=',
+  EncryptedDataKey: 'AQIDAHhyrbU/fPcQ+a8pJiYC78j8wop4mw1jqy3CZk35',
+  EncryptionContext: {
+    entity: 'test'
   },
-  'Iv': '00968820dfc11ee7816ac942b3980941'
+  Iv: '00968820dfc11ee7816ac942b3980941'
 }
 
 describe('the index module', function () {
@@ -142,7 +142,7 @@ describe('the index module', function () {
       const message = {
         EncryptedData: 'aVA+gdKlKhurE791OKA7Cg==',
         EncryptedDataKey: '4Fw134aB+YsfzuWbzI4NLg==',
-        EncryptionContext: { 'abc': 'test' },
+        EncryptionContext: { abc: 'test' },
         Iv: 'd16490194f8b57bb1c1d6ba8ba10125e'
       }
 
@@ -153,7 +153,7 @@ describe('the index module', function () {
 
         expect(decryptStub).to.have.been.calledWith({
           CiphertextBlob: Buffer.from(message.EncryptedDataKey, 'base64'),
-          EncryptionContext: { 'abc': 'test' }
+          EncryptionContext: { abc: 'test' }
         })
         done()
       })
