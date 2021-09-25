@@ -17,6 +17,7 @@ __pycache__/
 # due to using tox and pytest
 .tox
 .cache
+.mypy_cache
 
 # coverage.py
 .coverage

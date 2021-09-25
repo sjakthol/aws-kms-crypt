@@ -1,1 +1,2 @@
-from kmscrypt.crypto import decrypt, encrypt  # noqa: F401
+"""Library to encrypt and decrypt secrets with AWS KMS."""
+from kmscrypt.crypto import decrypt, encrypt

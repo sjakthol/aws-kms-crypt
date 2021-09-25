@@ -2,50 +2,70 @@
 
 import base64
 import binascii
-import copy
+import os
+
+from typing import Dict, Final, Union, TypedDict
 
 import boto3
-from Crypto import Random
-from Crypto.Cipher import AES
-
-import kmscrypt.pkcs7
-import kmscrypt.helpers
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
 
 AES_IV_BYTES = 16
 AES_KEY_BYTES = 16  # 128 bits
-AES_KEY_SPEC = 'AES_128'
-AES_MODE = AES.MODE_CBC
+AES_BLOCK_SIZE = 128  # bits
+AES_KEY_SPEC: Final = "AES_128"
 
 
-def decrypt(data):
+class EncryptedData(TypedDict):
+    """Dict containing encrypted data and information needed to decrypt it."""
+
+    EncryptedData: str
+    EncryptedDataKey: str
+    EncryptionContext: Dict[str, str]
+    Iv: str
+
+
+def decrypt(data: EncryptedData, session: boto3.Session = None) -> bytes:
     """Decrypts previously encrypted data.
 
     Args:
-        data: The (JSON) object returned by the encryption routine. The keys and
-            values of this dict should be unicode / str (py2) or str (py3). It
-            can be safely loaded with, for example, json.load() or stored as a
-            dict alongside the code.
+        data: The (JSON) object returned by earlier call to encrypt().
+        session: boto3.Session object to use for KMS calls.
 
     Returns:
-        The encrypted secret as an unicode string.
+        The encrypted secret as bytes.
     """
-    kms = boto3.client('kms')
+    # Decode payload
+    ciphertext = base64.b64decode(data["EncryptedData"])
+    encrypted_data_key = base64.b64decode(data["EncryptedDataKey"])
+    initialization_vector = binascii.unhexlify(data["Iv"])
+
+    # Decrypt key
+    kms = (session or boto3.Session()).client("kms")
     res = kms.decrypt(
-        CiphertextBlob=base64.b64decode(data['EncryptedDataKey']),
-        EncryptionContext=data['EncryptionContext']
+        CiphertextBlob=encrypted_data_key,
+        EncryptionContext=data["EncryptionContext"],
     )
+    key = res["Plaintext"]
 
-    key = res['Plaintext']
-    iv = binascii.unhexlify(data['Iv'])
+    # Decrypt data
+    cipher = Cipher(algorithms.AES(key), modes.CBC(initialization_vector))
+    decryptor = cipher.decryptor()
+    padded_plaintext = decryptor.update(ciphertext) + decryptor.finalize()
 
-    cipher = AES.new(key, AES_MODE, iv)
-    ciphertext = base64.b64decode(data['EncryptedData'])
-    plaintext = cipher.decrypt(ciphertext)
+    # Unpad data
+    unpadder = padding.PKCS7(AES_BLOCK_SIZE).unpadder()
+    plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
 
-    return kmscrypt.pkcs7.unpad(plaintext, block_size=AES_KEY_BYTES).decode('UTF-8')
+    return plaintext
 
 
-def encrypt(data, key_id, encryption_context={}):
+def encrypt(
+    data: Union[str, bytes],
+    key_id: str,
+    encryption_context: Dict[str, str] = None,
+    session: boto3.Session = None,
+) -> EncryptedData:
     """Encrypts a given data string.
 
     Args:
@@ -55,29 +75,42 @@ def encrypt(data, key_id, encryption_context={}):
             data with
         encryption_context: Optional encryption context (key-value dict)
             for KMS
+        session: boto3.Session object to use for KMS calls.
 
     Returns:
         A dictionary containing the data that is required to decrypt the
         secret.
     """
 
-    kms = boto3.client('kms')
-    res = kms.generate_data_key(KeyId=key_id, KeySpec=AES_KEY_SPEC, EncryptionContext=encryption_context)
+    if not encryption_context:
+        encryption_context = {}
 
-    key = res['Plaintext']
-    iv = Random.new().read(16)
+    # Generate key
+    kms = (session or boto3.Session()).client("kms")
+    res = kms.generate_data_key(
+        KeyId=key_id, KeySpec=AES_KEY_SPEC, EncryptionContext=encryption_context
+    )
+    key = res["Plaintext"]
 
-    if not isinstance(data, bytes):
-        data = data.encode('UTF-8')
+    # And initialization vector
+    initialization_vector = os.urandom(16)
 
-    message = kmscrypt.pkcs7.pad(data, block_size=AES_KEY_BYTES)
+    # Ensure data is bytes
+    if isinstance(data, str):
+        data = data.encode("utf-8")
 
-    cipher = AES.new(key, AES_MODE, iv)
-    ciphertext = cipher.encrypt(message)
+    # Pad data
+    padder = padding.PKCS7(AES_BLOCK_SIZE).padder()
+    padded_data = padder.update(data) + padder.finalize()
+
+    # Encrypt data
+    cipher = Cipher(algorithms.AES(key), modes.CBC(initialization_vector))
+    encryptor = cipher.encryptor()
+    ciphertext = encryptor.update(padded_data) + encryptor.finalize()
 
     return {
-        'EncryptedData': kmscrypt.helpers.b64encode(ciphertext),
-        'EncryptedDataKey': kmscrypt.helpers.b64encode(res['CiphertextBlob']),
-        'EncryptionContext': copy.copy(encryption_context),
-        'Iv': kmscrypt.helpers.hexlify(iv)
+        "EncryptedData": base64.b64encode(ciphertext).decode(),
+        "EncryptedDataKey": base64.b64encode(res["CiphertextBlob"]).decode(),
+        "EncryptionContext": encryption_context,
+        "Iv": binascii.b2a_hex(initialization_vector).decode(),
     }
