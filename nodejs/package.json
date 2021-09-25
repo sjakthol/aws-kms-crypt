@@ -40,7 +40,7 @@
     ]
   },
   "dependencies": {
-    "aws-sdk": "^2.100.0"
+    "aws-sdk": "^2.995.0"
   },
   "files": [
     "index.js",
