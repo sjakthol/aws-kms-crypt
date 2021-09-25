@@ -160,8 +160,7 @@ kmscrypt.decrypt({
 
 ## Python
 The `python` directory contains a Python package that implements the KMS based encryption
-and decryption functionality. The module has been tested to work with both Python 2.7 and
-Python 3.5.
+and decryption functionality. It supports Python 3.6 and newer.
 
 ### Encrypting Data
 ```python
@@ -183,7 +182,7 @@ res = kmscrypt.encrypt('secretp4ssw0rd!', key_id='alias/common', encryption_cont
 ### Decrypting Data
 ```python
 secret = kmscrypt.decrypt(res)
-print(secret) # => secretp4ssw0rd!
+print(secret) # => b'secretp4ssw0rd!'
 ```
 
 <a name="usage-rust"></a>
