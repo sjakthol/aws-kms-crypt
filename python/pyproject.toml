@@ -26,7 +26,7 @@ pytest-cov = "^3.0.0"
 safety = "^1.10.3"
 tox = "^3.23.0"
 moto = {extras = ["kms"], version = "^2.2.13"}
-typing-extensions = "^3.10.0"
+typing-extensions = "^4.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
