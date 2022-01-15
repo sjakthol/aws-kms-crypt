@@ -8,8 +8,10 @@ updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/nodejs/" # Location of package manifests
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    open-pull-requests-limit: 20
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/python/" # Location of package manifests
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    open-pull-requests-limit: 20
