@@ -20,7 +20,7 @@ bandit = "^1.7.1"
 black = "^22.1"
 boto3-stubs = {extras = ["kms"], version = "^1.22.4"}
 mypy = "^0.950"
-pylint = "^2.13.7"
+pylint = "^2.13.8"
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 safety = "^1.10.3"
