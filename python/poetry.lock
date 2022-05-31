@@ -709,7 +709,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "moto"
-version = "3.1.10"
+version = "3.1.11"
 description = "A library that allows your python tests to easily mock out the boto library"
 category = "dev"
 optional = false
@@ -726,7 +726,7 @@ python-dateutil = ">=2.1,<3.0.0"
 pytz = "*"
 requests = ">=2.5"
 responses = ">=0.9.0"
-werkzeug = "*"
+werkzeug = ">=0.5"
 xmltodict = "*"
 
 [package.extras]
@@ -736,7 +736,7 @@ apigatewayv2 = ["PyYAML (>=5.1)"]
 appsync = ["graphql-core"]
 awslambda = ["docker (>=2.5.1)"]
 batch = ["docker (>=2.5.1)"]
-cloudformation = ["docker (>=2.5.1)", "PyYAML (>=5.1)", "cfn-lint (>=0.4.0)"]
+cloudformation = ["PyYAML (>=5.1)", "python-jose[cryptography] (>=3.1.0,<4.0.0)", "ecdsa (!=0.15)", "docker (>=2.5.1)", "graphql-core", "jsondiff (>=1.1.2)", "aws-xray-sdk (>=0.93,!=0.96)", "idna (>=2.5,<4)", "cfn-lint (>=0.4.0)", "sshpubkeys (>=3.1.0)", "pyparsing (>=3.0.7)", "openapi-spec-validator (>=0.2.8)", "setuptools"]
 cognitoidp = ["python-jose[cryptography] (>=3.1.0,<4.0.0)", "ecdsa (!=0.15)"]
 ds = ["sshpubkeys (>=3.1.0)"]
 dynamodb = ["docker (>=2.5.1)"]
@@ -1180,7 +1180,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "f223d1f6e68cac81deb0d7f624b091136c27e10a045bd4f4c466ddf8190c95b6"
+content-hash = "6acea07ddfb4751547a20a21d8f8e3d79ace9ef07bb40ce1201c968973e63745"
 
 [metadata.files]
 astroid = [
@@ -1552,8 +1552,8 @@ mccabe = [
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
 moto = [
-    {file = "moto-3.1.10-py3-none-any.whl", hash = "sha256:d69bc53850e3a5fb14ec92beb2b11e94ed967900d3961297a901b0b91b227232"},
-    {file = "moto-3.1.10.tar.gz", hash = "sha256:f3b5f77780ed7a852670b4079931d8cd397983f631de7f9b09b81747a4bd56cd"},
+    {file = "moto-3.1.11-py3-none-any.whl", hash = "sha256:67dbd45c6e09e4b3968a8b08f9a5763b15551383ecd3effdbc0c1744e38248dd"},
+    {file = "moto-3.1.11.tar.gz", hash = "sha256:1b0c472f4b7401775a92e63fbcfa26112a00e087b9f6edda12202a39c62c6181"},
 ]
 mypy = [
     {file = "mypy-0.950-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:cf9c261958a769a3bd38c3e133801ebcd284ffb734ea12d01457cb09eacf7d7b"},
