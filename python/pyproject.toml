@@ -23,7 +23,7 @@ mypy = "^0.961"
 pylint = "^2.13.9"
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
-safety = "^1.10.3"
+safety = "^2.0.0"
 tox = "^3.25.0"
 moto = {extras = ["kms"], version = "^3.1.16"}
 typing-extensions = "^4.1.1"
