@@ -90,8 +90,8 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "boto3-stubs"
-version = "1.24.26"
-description = "Type annotations for boto3 1.24.26 generated with mypy-boto3-builder 7.7.2"
+version = "1.24.35"
+description = "Type annotations for boto3 1.24.35 generated with mypy-boto3-builder 7.9.2"
 category = "dev"
 optional = false
 python-versions = ">=3.6"
@@ -99,6 +99,7 @@ python-versions = ">=3.6"
 [package.dependencies]
 botocore-stubs = "*"
 mypy-boto3-kms = {version = ">=1.24.0,<1.25.0", optional = true, markers = "extra == \"kms\""}
+types-s3transfer = "*"
 typing-extensions = ">=4.1.0"
 
 [package.extras]
@@ -264,7 +265,6 @@ kafkaconnect = ["mypy-boto3-kafkaconnect (>=1.24.0,<1.25.0)"]
 kendra = ["mypy-boto3-kendra (>=1.24.0,<1.25.0)"]
 keyspaces = ["mypy-boto3-keyspaces (>=1.24.0,<1.25.0)"]
 kinesis = ["mypy-boto3-kinesis (>=1.24.0,<1.25.0)"]
-ssm = ["mypy-boto3-ssm (>=1.24.0,<1.25.0)"]
 kinesis-video-archived-media = ["mypy-boto3-kinesis-video-archived-media (>=1.24.0,<1.25.0)"]
 kinesis-video-media = ["mypy-boto3-kinesis-video-media (>=1.24.0,<1.25.0)"]
 kinesis-video-signaling = ["mypy-boto3-kinesis-video-signaling (>=1.24.0,<1.25.0)"]
@@ -384,6 +384,7 @@ snow-device-management = ["mypy-boto3-snow-device-management (>=1.24.0,<1.25.0)"
 snowball = ["mypy-boto3-snowball (>=1.24.0,<1.25.0)"]
 sns = ["mypy-boto3-sns (>=1.24.0,<1.25.0)"]
 sqs = ["mypy-boto3-sqs (>=1.24.0,<1.25.0)"]
+ssm = ["mypy-boto3-ssm (>=1.24.0,<1.25.0)"]
 ssm-contacts = ["mypy-boto3-ssm-contacts (>=1.24.0,<1.25.0)"]
 ssm-incidents = ["mypy-boto3-ssm-incidents (>=1.24.0,<1.25.0)"]
 sso = ["mypy-boto3-sso (>=1.24.0,<1.25.0)"]
@@ -1123,6 +1124,14 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "types-s3transfer"
+version = "0.6.0.post2"
+description = "Type annotations and code completion for s3transfer"
+category = "dev"
+optional = false
+python-versions = ">=3.6,<4.0"
+
+[[package]]
 name = "typing-extensions"
 version = "4.1.1"
 description = "Backported and Experimental Type Hints for Python 3.6+"
@@ -1208,7 +1217,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "cbdb8ca98a9c6ec7f450a6be1ebb76966c214fd61bea981b0c4386a960ee3356"
+content-hash = "7484191bc324e66a32a99868b046a13e7ec4718ac0751fbcdaa00bef90e1ec7f"
 
 [metadata.files]
 astroid = [
@@ -1257,8 +1266,8 @@ boto3 = [
     {file = "boto3-1.23.10.tar.gz", hash = "sha256:2a4395e3241c20eef441d7443a5e6eaa0ee3f7114653fb9d9cef41587526f7bd"},
 ]
 boto3-stubs = [
-    {file = "boto3-stubs-1.24.26.tar.gz", hash = "sha256:222707c003bd1dc0d616a38e1aafeedb9c4eb3c371c2389a1ae11373146a93d8"},
-    {file = "boto3_stubs-1.24.26-py3-none-any.whl", hash = "sha256:7434abadcc012609896b9846445caf2c0235d8ef7c378ec7ea4f3ce944d4ce1d"},
+    {file = "boto3-stubs-1.24.35.tar.gz", hash = "sha256:b99fa11e43e676072088488e43c2d61bb2cfc9b6a6af9e9b00c3377a0ef91a63"},
+    {file = "boto3_stubs-1.24.35-py3-none-any.whl", hash = "sha256:f327bec79a1437f15f1bacc5aad58e274a227b0d27f3a46cae034ed4be31ab32"},
 ]
 botocore = [
     {file = "botocore-1.26.10-py3-none-any.whl", hash = "sha256:8a4a984bf901ccefe40037da11ba2abd1ddbcb3b490a492b7f218509c99fc12f"},
@@ -1799,6 +1808,10 @@ typed-ast = [
     {file = "typed_ast-1.5.2-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:f290617f74a610849bd8f5514e34ae3d09eafd521dceaa6cf68b3f4414266d4e"},
     {file = "typed_ast-1.5.2-cp39-cp39-win_amd64.whl", hash = "sha256:df05aa5b241e2e8045f5f4367a9f6187b09c4cdf8578bb219861c4e27c443db5"},
     {file = "typed_ast-1.5.2.tar.gz", hash = "sha256:525a2d4088e70a9f75b08b3f87a51acc9cde640e19cc523c7e41aa355564ae27"},
+]
+types-s3transfer = [
+    {file = "types-s3transfer-0.6.0.post2.tar.gz", hash = "sha256:af5222a02eb1491828c01d3f7b0f77bc9600989ecfbff6df63a60b8ba88c4565"},
+    {file = "types_s3transfer-0.6.0.post2-py3-none-any.whl", hash = "sha256:9d9a2b2a068c0cd18dd20db81a118e7664d801427fdc36cb345a85fe8d245d20"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.1.1-py3-none-any.whl", hash = "sha256:21c85e0fe4b9a155d0799430b0ad741cdce7e359660ccbd8b530613e8df88ce2"},
