@@ -7,6 +7,7 @@ import os
 from typing import TYPE_CHECKING, Dict, Union
 
 import boto3
+import boto3.session
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 
@@ -31,7 +32,7 @@ class EncryptedData(TypedDict):
     Iv: str
 
 
-def decrypt(data: EncryptedData, session: boto3.Session = None) -> bytes:
+def decrypt(data: EncryptedData, session: boto3.session.Session = None) -> bytes:
     """Decrypts previously encrypted data.
 
     Args:
@@ -47,7 +48,7 @@ def decrypt(data: EncryptedData, session: boto3.Session = None) -> bytes:
     initialization_vector = binascii.unhexlify(data["Iv"])
 
     # Decrypt key
-    kms = (session or boto3.Session()).client("kms")
+    kms = (session or boto3.session.Session()).client("kms")
     res = kms.decrypt(
         CiphertextBlob=encrypted_data_key,
         EncryptionContext=data["EncryptionContext"],
@@ -70,7 +71,7 @@ def encrypt(
     data: Union[str, bytes],
     key_id: str,
     encryption_context: Dict[str, str] = None,
-    session: boto3.Session = None,
+    session: boto3.session.Session = None,
 ) -> EncryptedData:
     """Encrypts a given data string.
 
@@ -92,7 +93,7 @@ def encrypt(
         encryption_context = {}
 
     # Generate key
-    kms = (session or boto3.Session()).client("kms")
+    kms = (session or boto3.session.Session()).client("kms")
     res = kms.generate_data_key(
         KeyId=key_id, KeySpec=AES_KEY_SPEC, EncryptionContext=encryption_context
     )
