@@ -10,7 +10,7 @@ pip install aws-kms-crypt
 
 # Usage
 
-Requires Python 3.6 or newer.
+Requires Python 3.7 or newer.
 
 ```python
 import kmscrypt
@@ -35,6 +35,10 @@ b'secretp4ssw0rd!'
 ```
 
 # Changelog
+
+## v2.0.0 (2022-09-15)
+
+* Dropped Python 3.6 support.
 
 ## v1.0.0 (2021-09-25)
 

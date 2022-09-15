@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aws-kms-crypt"
-version = "1.0.0"
+version = "2.0.0"
 description = "Utility for encrypting and decrypting secrets with the AWS KMS service"
 authors = ["Sami Jaktholm <sjakthol@outlook.com>"]
 license = "MIT"
@@ -11,7 +11,7 @@ packages = [
 readme = 'README.md'
 
 [tool.poetry.dependencies]
-python = ">=3.6.2,<4.0"
+python = ">=3.7,<4.0"
 cryptography = ">=3.4,<38.0"
 boto3 = "<2"
 
