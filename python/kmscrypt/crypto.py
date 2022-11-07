@@ -4,7 +4,7 @@ import base64
 import binascii
 import os
 
-from typing import TYPE_CHECKING, Dict, Union
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
 import boto3
 import boto3.session
@@ -32,7 +32,9 @@ class EncryptedData(TypedDict):
     Iv: str
 
 
-def decrypt(data: EncryptedData, session: boto3.session.Session = None) -> bytes:
+def decrypt(
+    data: EncryptedData, session: Optional[boto3.session.Session] = None
+) -> bytes:
     """Decrypts previously encrypted data.
 
     Args:
@@ -70,8 +72,8 @@ def decrypt(data: EncryptedData, session: boto3.session.Session = None) -> bytes
 def encrypt(
     data: Union[str, bytes],
     key_id: str,
-    encryption_context: Dict[str, str] = None,
-    session: boto3.session.Session = None,
+    encryption_context: Optional[Dict[str, str]] = None,
+    session: Optional[boto3.session.Session] = None,
 ) -> EncryptedData:
     """Encrypts a given data string.
 
