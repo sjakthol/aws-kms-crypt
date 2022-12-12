@@ -24,7 +24,7 @@ pylint = "^2.13.9"
 pytest = "^7.2.0"
 pytest-cov = "^4.0.0"
 safety = "^2.3.3"
-tox = "^3.27.1"
+tox = "^4.0.8"
 moto = {extras = ["kms"], version = "^4.0.11"}
 typing-extensions = "^4.4.0"
 
