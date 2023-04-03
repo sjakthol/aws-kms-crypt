@@ -18,7 +18,7 @@ boto3 = "<2"
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.5"
 black = "^22.12"
-boto3-stubs = {extras = ["kms"], version = "^1.26.99"}
+boto3-stubs = {extras = ["kms"], version = "^1.26.104"}
 mypy = "^1.1"
 pylint = "^2.13.9"
 pytest = "^7.2.2"
