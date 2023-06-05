@@ -9,9 +9,11 @@ updates:
     directory: "/nodejs/" # Location of package manifests
     schedule:
       interval: "weekly"
+      day: "sunday"
     open-pull-requests-limit: 20
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/python/" # Location of package manifests
     schedule:
       interval: "weekly"
+      day: "sunday"
     open-pull-requests-limit: 20
