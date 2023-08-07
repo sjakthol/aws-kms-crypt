@@ -25,7 +25,7 @@ pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
 safety = "^2.3.5"
 tox = "^3.27.1"
-moto = {extras = ["kms"], version = "^4.1.13"}
+moto = {extras = ["kms"], version = "^4.1.14"}
 typing-extensions = "^4.6.3"
 
 [build-system]
