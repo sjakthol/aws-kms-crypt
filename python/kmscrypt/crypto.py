@@ -4,18 +4,13 @@ import base64
 import binascii
 import os
 
-from typing import TYPE_CHECKING, Dict, Optional, Union
+from typing import Dict, Final, Optional, Union, TypedDict
 
 import boto3
 import boto3.session
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 
-if TYPE_CHECKING:
-    from typing_extensions import Final, TypedDict
-else:
-    Final = object
-    TypedDict = object
 
 AES_IV_BYTES = 16
 AES_KEY_BYTES = 16  # 128 bits

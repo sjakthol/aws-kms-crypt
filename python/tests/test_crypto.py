@@ -17,7 +17,7 @@ def mock_aws_env(monkeypatch):
 
 @pytest.fixture()
 def mock_kms_key():
-    with moto.mock_kms():
+    with moto.mock_aws():
         kms = boto3.client("kms")
         yield kms.create_key()["KeyMetadata"]["KeyId"]
 
