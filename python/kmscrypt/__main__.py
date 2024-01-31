@@ -1,4 +1,5 @@
 """Simple CLI to encrypt and decrypt secrets with AWS KMS."""
+
 import fileinput
 import json
 import sys
