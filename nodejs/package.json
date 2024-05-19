@@ -22,11 +22,11 @@
     "url": "https://github.com/sjakthol/aws-kms-crypt"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
+    "chai": "^5.1.1",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
     "pre-commit": "^1.2.2",
-    "sinon": "^15.0.0",
+    "sinon": "^18.0.0",
     "sinon-chai": "^3.7.0",
     "standard": "^17.0.0"
   },
