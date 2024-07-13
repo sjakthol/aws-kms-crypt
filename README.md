@@ -1,3 +1,9 @@
+# MAINTENANCE DISCONTINUED
+
+This project is no longer actively maintained. Consider migrating over to [AWS Encryption SDK](https://docs.aws.amazon.com/encryption-sdk/latest/developer-guide/introduction.html).
+
+--
+
 # aws-kms-crypt
 
 Library for encrypting and decrypting secrets within the AWS ecosystem.
